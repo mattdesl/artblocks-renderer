@@ -1,0 +1,40 @@
+{
+  "name": "artblocks-renderer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "license": "MIT",
+  "author": {
+    "name": "Matt DesLauriers",
+    "email": "dave.des@gmail.com",
+    "url": "https://github.com/mattdesl"
+  },
+  "dependencies": {
+    "esbuild": "^0.12.9",
+    "escape-html": "^1.0.3",
+    "gifenc": "^1.0.3",
+    "maxstache": "^1.0.7",
+    "mp4-wasm": "^1.0.3",
+    "node-fetch": "^2.6.1"
+  },
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "serve": "vite preview"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^1.0.0-next.11",
+    "svelte": "^3.37.0",
+    "vite": "^2.3.8"
+  },
+  "keywords": [],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/mattdesl/artblocks-renderer.git"
+  },
+  "homepage": "https://github.com/mattdesl/artblocks-renderer",
+  "bugs": {
+    "url": "https://github.com/mattdesl/artblocks-renderer/issues"
+  }
+}
