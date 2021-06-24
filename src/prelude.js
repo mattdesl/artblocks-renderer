@@ -82,10 +82,18 @@ export default function getPrelude(opts = {}) {
         const canvas = findCanvas();
         if (!canvas) return console.warn("no canvas");
 
+        // const tmpCanvas = document.createElement('canvas');
+        // const tmpContext = tmpCanvas.getContext('2d');
+        // tmpCanvas.width = width;
+        // tmpCanvas.height = height;
+
         for (let i of frameList) {
           const dt = (1 / fps) * 1000;
           time.step(dt);
 
+          // tmpContext.clearRect(0, 0, width, height);
+          // tmpContext.drawImage(canvas, 0, 0, width, height);
+          // const pixels = tmpContext.getImageData(0, 0, width, height).data;
           const pixels = await createImageBitmap(canvas)
           const p = waitForFrame(i);
           send({ event: 'frame', pixels, frame: i }, [pixels]);
@@ -97,7 +105,9 @@ export default function getPrelude(opts = {}) {
         send('finish');
 
         function findCanvas() {
-          const canvases = [...document.querySelectorAll("canvas")];
+          const canvases = [...document.querySelectorAll("canvas")].filter(d => {
+            return d.style.display !== 'none' && d.style.visibility !== 'hidden'
+          });
           const canvas = canvases[canvases.length - 1];
           return canvas;
         }

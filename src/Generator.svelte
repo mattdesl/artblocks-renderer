@@ -188,6 +188,6 @@
   iframe {
     pointer-events: none;
     border: none;
-    visibility: hidden;
+    /* visibility: hidden; */
   }
 </style>
