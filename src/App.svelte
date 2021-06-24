@@ -6,8 +6,8 @@
   let fps = 30;
   let fpsPresets = [24, 25, 30, 50, 60];
   let duration = 4;
-  let width = 1920;
-  let height = 1080;
+  let width = 512;
+  let height = 512;
   let format = "gif";
 
   let rendering = false;
@@ -19,8 +19,14 @@
     progress = 0;
     rendering = true;
   }
+
   function stopRender() {
     rendering = false;
+  }
+
+  async function canUseMP4() {
+    const { isWebCodecsSupported } = await window.MP4Encoder;
+    return isWebCodecsSupported();
   }
 </script>
 
@@ -28,9 +34,12 @@
   <div class="info">
     <h1>ArtBlocks Recorder</h1>
     <p>
-      Enter your configuration and click the <strong>Render</strong> button to
-      export the high quality media. By
-      <a href="https://twitter.com/mattdesl">@mattdesl</a>.
+      Enter your configuration and click the <strong>Render</strong> button to export
+      the high quality media.
+    </p>
+    <p>
+      Made by
+      <a target="_blank" href="https://twitter.com/mattdesl">@mattdesl</a>.
     </p>
   </div>
   {#if rendering}
@@ -110,9 +119,23 @@
         <caption>Format</caption>
         <select bind:value={format}>
           <option value="gif">gif</option>
-          <option value="mp4">mp4</option>
+          {#await canUseMP4() then canUse}
+            {#if canUse}
+              <option value="mp4">mp4</option>
+            {/if}
+          {/await}
         </select>
       </div>
+
+      {#await canUseMP4() then canUse}
+        {#if !canUse}
+          <p class="mp4-support">
+            Note: MP4 support disabled, please use Chrome with "Experimental Web
+            Platform Features" enabled in chrome://flags.
+          </p>
+        {/if}
+      {/await}
+
       <button on:click={startRender} class="render button">Render</button>
     </div>
   {/if}
@@ -149,6 +172,12 @@
     align-items: center;
   }
 
+  .mp4-support {
+    font-size: 10px;
+    color: red;
+    max-width: 450px;
+    display: block;
+  }
   input,
   button,
   select {

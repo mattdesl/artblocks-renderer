@@ -103,7 +103,6 @@
       type: "video/mp4",
       extension: ".mp4",
       async encode(bitmap) {
-        console.log("bitmap", bitmap.width, width);
         await encoder.addFrame(bitmap);
       },
       async finish() {
