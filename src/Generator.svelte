@@ -18,6 +18,7 @@
   export let height = 1080;
   export let format = "mp4";
   export let totalFrames = 30;
+  export let dithering = false;
 
   const maxDim = 256;
 
@@ -85,7 +86,7 @@
   });
 
   async function start(id) {
-    let opts = { width, height, fps, totalFrames };
+    let opts = { width, height, fps, totalFrames, dithering };
     if (format === "mp4") encoder = await createMP4Encoder(opts);
     else if (format === "png") encoder = await createPNGEncoder(opts);
     else if (format === "frames")

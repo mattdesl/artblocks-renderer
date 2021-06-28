@@ -10,6 +10,7 @@
   let width = 512;
   let height = 512;
   let format = "gif";
+  let dithering = false;
 
   let rendering = false;
   let totalFrames;
@@ -57,6 +58,7 @@
       }}
       on:finish={stopRender}
       {fps}
+      {dithering}
       totalFrames={format === "png" ? 1 : totalFrames}
       {width}
       {height}
@@ -84,6 +86,15 @@
           {/await}
         </select>
       </div>
+      {#if format === "gif"}
+        <div class="field dimensions-container">
+          <caption>Dithering</caption>
+          <label class="dither-box"
+            ><input type="checkbox" bind:checked={dithering} />
+            slower encoding, but higher quality gradients</label
+          >
+        </div>
+      {/if}
       <div class="field fps-container" class:hidden={format === "png"}>
         <caption>Framerate</caption>
         <input
@@ -156,6 +167,18 @@
   }
   :global(body) {
     margin: 20px;
+  }
+
+  .dither-box {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    font-size: 10px;
+    color: hsl(0, 0%, 50%);
+  }
+  .dither-box input {
+    margin-right: 10px;
   }
 
   .info h1 {

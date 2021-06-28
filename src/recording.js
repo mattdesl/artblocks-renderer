@@ -1,4 +1,5 @@
 import { GIFEncoder, quantize, applyPalette } from "gifenc";
+import floydSteinberg from "./dither.js";
 
 let tmpCanvas = document.createElement("canvas");
 let tmpContext = tmpCanvas.getContext("2d");
@@ -123,21 +124,34 @@ export async function createFrameSequenceEncoder(opts = {}) {
 }
 
 export async function createGIFEncoder(opts = {}) {
-  const { fps = 30, width, height } = opts;
+  const { fps = 30, width, height, dithering = false } = opts;
   const gif = GIFEncoder();
+  let firstFrame = true;
+  let initialPalette = null;
+  const useInitialPalette = false;
   return {
     type: "image/gif",
     extension: ".gif",
     async encode(bitmap) {
       const pixels = getBitmapRGBA(bitmap, width, height);
-      const palette = quantize(pixels, 256);
-      const index = applyPalette(pixels, palette);
+      const palette =
+        useInitialPalette && initialPalette
+          ? initialPalette
+          : quantize(pixels, 256);
+      if (!initialPalette) initialPalette = palette;
+      const dithered = dithering
+        ? floydSteinberg(pixels, width, height, palette)
+        : pixels;
+      const index = applyPalette(dithered, palette);
       const fpsInterval = 1 / fps;
       const delay = fpsInterval * 1000;
+      let curPalette;
+      if (firstFrame || !useInitialPalette) curPalette = palette;
       gif.writeFrame(index, width, height, {
-        palette,
+        palette: curPalette,
         delay,
       });
+      firstFrame = false;
     },
     async finish() {
       gif.finish();
