@@ -146,6 +146,22 @@ export async function createGIFEncoder(opts = {}) {
   };
 }
 
+export async function createPNGEncoder(opts = {}) {
+  const { width, height } = opts;
+  const gif = GIFEncoder();
+  let blob;
+  return {
+    type: "image/png",
+    extension: ".png",
+    async encode(bitmap) {
+      blob = getBitmapBlob(bitmap, width, height, "image/png");
+    },
+    async finish() {
+      return blob;
+    },
+  };
+}
+
 function createBlobFromDataURL(dataURL) {
   const splitIndex = dataURL.indexOf(",");
   if (splitIndex === -1) {

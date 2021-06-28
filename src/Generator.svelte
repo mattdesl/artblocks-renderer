@@ -5,6 +5,7 @@
   import {
     createMP4Encoder,
     createGIFEncoder,
+    createPNGEncoder,
     downloadBlob,
     createFrameSequenceEncoder,
   } from "./recording";
@@ -86,7 +87,9 @@
   async function start(id) {
     let opts = { width, height, fps, totalFrames };
     if (format === "mp4") encoder = await createMP4Encoder(opts);
-    else if (format === "png") encoder = await createFrameSequenceEncoder(opts);
+    else if (format === "png") encoder = await createPNGEncoder(opts);
+    else if (format === "frames")
+      encoder = await createFrameSequenceEncoder(opts);
     else encoder = await createGIFEncoder(opts);
 
     // aborted
@@ -124,6 +127,7 @@
 
 <div
   class="container"
+  class:hidden={format === "png"}
   style="width: {canvasWidth}px; height: {canvasHeight}px;"
 >
   {#await promise}
@@ -153,6 +157,9 @@
   iframe {
     pointer-events: none;
     border: none;
+    visibility: hidden;
+  }
+  .hidden {
     visibility: hidden;
   }
 </style>

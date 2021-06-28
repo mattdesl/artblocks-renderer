@@ -46,7 +46,10 @@
   {#if rendering}
     <div class="row">
       <button on:click={stopRender} class="button">Cancel</button>
-      <Progress {progress} />
+      {#if format !== "png"}<Progress {progress} />
+      {:else}
+        <div class="rendering">Rendering...</div>
+      {/if}
     </div>
     <Generator
       on:progress={({ detail }) => {
@@ -54,7 +57,7 @@
       }}
       on:finish={stopRender}
       {fps}
-      {totalFrames}
+      totalFrames={format === "png" ? 1 : totalFrames}
       {width}
       {height}
       {format}
@@ -66,7 +69,22 @@
         <caption class="tab">Token ID</caption>
         <input class="token-id" type="text" bind:value={id} />
       </div>
-      <div class="field fps-container">
+      <div class="field dimensions-container">
+        <caption>Format</caption>
+        <select bind:value={format}>
+          <option value="gif">gif</option>
+          <option value="png">png still</option>
+          {#if isFrameSequenceSupported()}
+            <option value="frames">png sequence</option>
+          {/if}
+          {#await canUseMP4() then canUse}
+            {#if canUse}
+              <option value="mp4">mp4</option>
+            {/if}
+          {/await}
+        </select>
+      </div>
+      <div class="field fps-container" class:hidden={format === "png"}>
         <caption>Framerate</caption>
         <input
           class="fps"
@@ -84,7 +102,7 @@
           >
         {/each}
       </div>
-      <div class="field duration-container">
+      <div class="field duration-container" class:hidden={format === "png"}>
         <caption>Duration</caption>
         <input
           class="duration"
@@ -115,20 +133,6 @@
           bind:value={height}
         />
         <span class="unit">px</span>
-      </div>
-      <div class="field dimensions-container">
-        <caption>Format</caption>
-        <select bind:value={format}>
-          <option value="gif">gif</option>
-          {#if isFrameSequenceSupported()}
-            <option value="png">png sequence</option>
-          {/if}
-          {#await canUseMP4() then canUse}
-            {#if canUse}
-              <option value="mp4">mp4</option>
-            {/if}
-          {/await}
-        </select>
       </div>
 
       {#await canUseMP4() then canUse}
@@ -207,7 +211,8 @@
     margin-top: 20px;
   }
   .unit,
-  .x-separator {
+  .x-separator,
+  .rendering {
     font-size: 10px;
     margin-left: 5px;
     color: hsl(0, 0%, 50%);
@@ -267,5 +272,8 @@
 
   .field:first-child {
     margin-top: 0;
+  }
+  .hidden {
+    display: none;
   }
 </style>
