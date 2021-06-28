@@ -35,13 +35,29 @@ export default function getPrelude(opts = {}) {
       const time = window.__timelib__;
       time.attach();
 
-      // Wait for ready events
-      const onload = () => {
-        window.removeEventListener("load", onload);
-        // console.log("Starting...");
+      const onload = new Promise(resolve => {
+        // Wait for ready events
+        const onload = () => {
+          window.removeEventListener("load", onload);
+          resolve();
+        };
+        window.addEventListener("load", onload);
+      });
+
+      const onready = new Promise(resolve => {
+        // Wait for ready events
+        const onready = () => {
+          window.removeEventListener("DOMContentLoaded", onready);
+          resolve();
+        };
+        window.addEventListener("DOMContentLoaded", onready);
+      });
+
+      Promise.all([onload, onready]).then(async () => {
         start();
-      };
-      window.addEventListener("load", onload);
+      })
+
+      
 
       async function waitForEvent (event) {
         return new Promise(resolve => {
@@ -109,6 +125,7 @@ export default function getPrelude(opts = {}) {
             return d.style.display !== 'none' && d.style.visibility !== 'hidden'
           });
           const canvas = canvases[canvases.length - 1];
+          console.log('canvases', canvases)
           return canvas;
         }
       }

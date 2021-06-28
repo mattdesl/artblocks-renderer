@@ -1,8 +1,9 @@
 <script>
   import Generator from "./Generator.svelte";
   import Progress from "./Progress.svelte";
+  import { isFrameSequenceSupported } from "./recording";
 
-  let id = "9000025";
+  let id = "99000000";
   let fps = 30;
   let fpsPresets = [24, 25, 30, 50, 60];
   let duration = 4;
@@ -119,6 +120,9 @@
         <caption>Format</caption>
         <select bind:value={format}>
           <option value="gif">gif</option>
+          {#if isFrameSequenceSupported()}
+            <option value="png">png sequence</option>
+          {/if}
           {#await canUseMP4() then canUse}
             {#if canUse}
               <option value="mp4">mp4</option>

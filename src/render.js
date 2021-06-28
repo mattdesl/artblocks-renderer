@@ -32,6 +32,8 @@ export default (data, opts = {}) => {
         };
 
   const base = templates[type];
+  version = resolveVersion(type, version);
+
   const prelude = getPrelude(opts);
   const doc = maxstache(base, {
     version,
@@ -41,6 +43,11 @@ export default (data, opts = {}) => {
   });
   return doc;
 };
+
+function resolveVersion(type, version) {
+  if (type === "p5js") return version || "1.0.0";
+  return version;
+}
 
 // Minimalist mustache template replacement
 // (str, obj) -> null

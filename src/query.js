@@ -13,6 +13,9 @@ const PROJECT_EXPLORER =
 async function query(url, query) {
   const response = await fetch(url, {
     method: "post",
+    // mode: "cors", // no-cors, *cors, same-origin
+    // cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+    // credentials: "same-origin", // include, *same-origin, omit
     headers: {
       "Content-Type": "application/json",
     },
