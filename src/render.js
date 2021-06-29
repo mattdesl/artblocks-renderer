@@ -32,15 +32,25 @@ export default (data, opts = {}) => {
         };
 
   const base = templates[type];
+  console.log(type);
   version = resolveVersion(type, version);
+
+  let vendorUrl;
+  if (type === "regl") {
+    vendorUrl = "https://cdnjs.cloudflare.com/ajax/libs/regl/2.1.0/regl.min.js";
+  }
+  let vendor;
+  if (vendorUrl) vendor = `<script src="${vendorUrl}"></script>`;
 
   const prelude = getPrelude(opts);
   const doc = maxstache(base, {
     version,
     prelude,
+    vendor,
     tokenData: `<script>let tokenData = ${JSON.stringify(tokenData)};</script>`,
     script: `<script>${data.project.script}</script>`,
   });
+  console.log(doc);
   return doc;
 };
 
