@@ -34,10 +34,10 @@ async function fetchTokensByOwner(ownerAddress, opt = {}) {
   const { tokens } = await query(
     PROJECT_EXPLORER,
     `{
-  tokens(first: ${limit}, orderBy: id, orderDirection: asc, where: {id_gt: "${lastId}", owner: "${ownerAddress}"}) {
-    id
+  tokens(first: ${limit}, orderBy: tokenId, orderDirection: asc, where: {id_gt: "${lastId}", owner: "${ownerAddress}"}) {
+    tokenId
     project {
-      id
+      tokenId
     }
   }
 }`
@@ -52,10 +52,10 @@ async function fetchTokensByProject(projectId, opt = {}) {
   const { tokens } = await query(
     TOKEN_EXPLORER,
     `{
-  tokens(first: ${limit}, orderBy: id, orderDirection: asc, where: {id_gt: "${lastId}", project: "${projectId}"}) {
-    id
+  tokens(first: ${limit}, orderBy: tokenId, orderDirection: asc, where: {id_gt: "${lastId}", project: "${projectId}"}) {
+    tokenId
     project {
-      id
+      tokenId
       name
     }
   }
@@ -90,8 +90,8 @@ async function fetchProject(id) {
   const { projects } = await query(
     PROJECT_EXPLORER,
     `{
-  projects(where: { id: "${id}" }) {
-    id
+  projects(where: { projectId: "${id}" }) {
+    projectId
     name
     scriptJSON
     website
@@ -110,6 +110,7 @@ async function fetchProject(id) {
   );
   if (!projects || projects.length === 0) return null;
   const result = projects[0];
+  result.id = result.projectId;
   if (result) {
     result.scriptJSON = JSON.parse(result.scriptJSON);
     if ("aspectRatio" in result.scriptJSON) {
@@ -126,11 +127,8 @@ async function fetchToken(id) {
   const { tokens } = await query(
     PROJECT_EXPLORER,
     `{
-  tokens(where: { id: "${id}" }) {
-    id
-    owner {
-      id
-    }
+  tokens(where: { tokenId: "${id}" }) {
+    tokenId
     hash
   }
 }
@@ -141,8 +139,8 @@ async function fetchToken(id) {
     throw new Error("Received multiple tokens for id: " + id);
   const t = tokens[0];
   return {
-    id: t.id,
-    owner: t.owner.id,
+    id: t.tokenId,
+    // owner: t.owner.id,
     hash: t.hash,
   };
 }

@@ -12,6 +12,11 @@ export default (data, opts = {}) => {
   if (!type || type === "vanilla" || type === "n/a") type = "js";
   if (type === "p5") type = "p5js";
 
+  const accepted = ["p5js", "js"];
+  if (!accepted.includes(type)) {
+    return alert(`Error: Project type "${type}" not yet supported.`);
+  }
+
   if (data.project.scriptJSON && data.project.scriptJSON.version) {
     if (!/n[\\/]?a/i.test(data.project.scriptJSON.version)) {
       version = data.project.scriptJSON.version;
@@ -32,7 +37,7 @@ export default (data, opts = {}) => {
         };
 
   const base = templates[type];
-  console.log(type);
+  // console.log(type);
   version = resolveVersion(type, version);
 
   let vendorUrl;
@@ -50,7 +55,7 @@ export default (data, opts = {}) => {
     tokenData: `<script>let tokenData = ${JSON.stringify(tokenData)};</script>`,
     script: `<script>${data.project.script}</script>`,
   });
-  console.log(doc);
+  // console.log(doc);
   return doc;
 };
 
