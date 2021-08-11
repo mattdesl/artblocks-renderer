@@ -125,7 +125,7 @@ export default function getPrelude(opts = {}) {
             return d.style.display !== 'none' && d.style.visibility !== 'hidden'
           });
           const canvas = canvases[canvases.length - 1];
-          console.log('canvases', canvases)
+          // console.log('canvases', canvases)
           return canvas;
         }
       }

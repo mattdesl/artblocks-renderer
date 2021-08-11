@@ -1,7 +1,7 @@
 import templates from "./templates";
 import getPrelude from "./prelude";
 
-const acceptedTemplates = ["p5js", "js", "threejs"];
+const acceptedTemplates = ["p5js", "js", "threejs", "regl"];
 
 export default (data, opts = {}) => {
   let type = "js";

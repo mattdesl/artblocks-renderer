@@ -1,4 +1,5 @@
 import srcThree from "./vendor/three.r124.js?raw";
+import srcRegl from "./vendor/regl.2.1.0.js?raw";
 
 export default {
   js: `<html>
@@ -54,11 +55,10 @@ export default {
 </html>`,
   threejs: `<html>
   <head>
+    {{prelude}}
     <script>
     ${srcThree}
     </script>
-    <script>console.log("THREEJS LOADED!", window.THREE);</script>
-    {{prelude}}
     {{tokenData}}
     <style type="text/css">
       body {
@@ -81,7 +81,9 @@ export default {
     {{script}}
   </body>
 </html>`,
-  regl: `<html><head>{{prelude}}{{vendor}}{{tokenData}}<style type="text/css">body {
+  regl: `<html><head>{{prelude}}
+  <script>${srcRegl}</script>
+  {{tokenData}}<style type="text/css">body {
     margin: 0;
     padding: 0;
   }
