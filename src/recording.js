@@ -108,7 +108,7 @@ export async function createFrameSequenceEncoder(opts = {}) {
     type: "image/png",
     extension: ".png",
     async encode(bitmap, frameIndex) {
-      const frameDigitCount = String(totalFrames).length;
+      const frameDigitCount = Math.max(3, String(totalFrames).length);
       const curFrameName = String(frameIndex).padStart(frameDigitCount, "0");
       const curFrameFile = `${prefix}${curFrameName}${extension}`;
 

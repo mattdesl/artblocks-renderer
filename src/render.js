@@ -1,6 +1,8 @@
 import templates from "./templates";
 import getPrelude from "./prelude";
 
+const acceptedTemplates = ["p5js", "js", "threejs"];
+
 export default (data, opts = {}) => {
   let type = "js";
   let version;
@@ -11,9 +13,9 @@ export default (data, opts = {}) => {
   type = (type || "").toLowerCase();
   if (!type || type === "vanilla" || type === "n/a") type = "js";
   if (type === "p5") type = "p5js";
+  if (type === "three") type = "threejs";
 
-  const accepted = ["p5js", "js"];
-  if (!accepted.includes(type)) {
+  if (!acceptedTemplates.includes(type)) {
     return alert(`Error: Project type "${type}" not yet supported.`);
   }
 
@@ -37,7 +39,6 @@ export default (data, opts = {}) => {
         };
 
   const base = templates[type];
-  // console.log(type);
   version = resolveVersion(type, version);
 
   let vendorUrl;
@@ -55,7 +56,6 @@ export default (data, opts = {}) => {
     tokenData: `<script>let tokenData = ${JSON.stringify(tokenData)};</script>`,
     script: `<script>${data.project.script}</script>`,
   });
-  // console.log(doc);
   return doc;
 };
 
