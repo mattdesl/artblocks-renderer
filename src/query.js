@@ -45,12 +45,11 @@ async function fetchTokensByOwner(ownerAddress, opt = {}) {
   return tokens;
 }
 
-// Gets all AB tokens held by owner address
 async function fetchTokensByProject(projectId, opt = {}) {
   const { limit = 100 } = opt;
   const lastId = opt.lastId || opt.lastId === 0 ? opt.lastId : "-1";
   const { tokens } = await query(
-    TOKEN_EXPLORER,
+    PROJECT_EXPLORER,
     `{
   tokens(first: ${limit}, orderBy: tokenId, orderDirection: asc, where: {id_gt: "${lastId}", project: "${projectId}"}) {
     tokenId
