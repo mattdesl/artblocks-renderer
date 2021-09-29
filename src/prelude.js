@@ -1,14 +1,22 @@
 export default function getPrelude(opts = {}) {
-  const { width = 512, height = 512, fps = 30, totalFrames = 30 } = opts;
+  const {
+    inline = false,
+    width = 512,
+    height = 512,
+    fps = 30,
+    totalFrames = 30,
+  } = opts;
   const config = {
     width,
     height,
     fps,
     totalFrames,
+    inline,
   };
   return /*js*/ `
     <script>
     ;(function () {
+      const inline = ${JSON.stringify(inline)};
       const settings = ${JSON.stringify(config)};
       const { fps, width, height, totalFrames } = settings;
 
@@ -33,7 +41,9 @@ export default function getPrelude(opts = {}) {
       // console.log("Waiting...", settings);
       send('init');
       const time = window.__timelib__;
-      time.attach();
+      if (!inline) {
+        time.attach();
+      }
 
       const onload = new Promise(resolve => {
         // Wait for ready events
@@ -56,8 +66,6 @@ export default function getPrelude(opts = {}) {
       Promise.all([onload, onready]).then(async () => {
         start();
       })
-
-      
 
       async function waitForEvent (event) {
         return new Promise(resolve => {
@@ -89,6 +97,9 @@ export default function getPrelude(opts = {}) {
         const startEvent = waitForEvent('start');
         send('start');
         await startEvent;
+
+        // Inline mode just runs as normal until cancel
+        if (inline) return;
 
         // Create an encoding stream
         const frameList = Array(totalFrames)
@@ -125,7 +136,6 @@ export default function getPrelude(opts = {}) {
             return d.style.display !== 'none' && d.style.visibility !== 'hidden'
           });
           const canvas = canvases[canvases.length - 1];
-          // console.log('canvases', canvases)
           return canvas;
         }
       }

@@ -30,6 +30,9 @@
     canvasHeight = canvasWidth / aspect;
   }
 
+  let hasProgress = format !== 'inline';
+  $: hasProgress = format !== 'inline';
+
   let encoder;
   let promise, visualizer;
   $: promise = start(id);
@@ -39,17 +42,20 @@
     const iframe = evt.source;
     const data = evt.data;
     if (data.event === "start") {
-      dispatch("progress", 0);
+      if (hasProgress) dispatch("progress", 0);
       if (encoder) {
         iframe.postMessage({ event: "start" }, "*");
       } else {
-        dispatch("finish");
+        if (hasProgress) dispatch("finish");
       }
     } else if (data.event === "frame") {
       const frame = data.frame;
       const pixels = data.pixels;
-      dispatch("progress", frame / totalFrames);
-      await encoder.encode(pixels, frame);
+
+      if (hasProgress) {
+        dispatch("progress", frame / totalFrames);
+        await encoder.encode(pixels, frame);
+      }
 
       if (visualizer) {
         visualizer.width = canvasWidth * pixelRatio;
@@ -70,11 +76,13 @@
       );
     } else if (data.event === "finish") {
       const buf = await encoder.finish();
-      dispatch("progress", 1);
-      if (buf) {
-        downloadBlob(buf, `${id}${encoder.extension}`, encoder.type);
+      if (hasProgress) {
+        dispatch("progress", 1);
+        if (buf) {
+          downloadBlob(buf, `${id}${encoder.extension}`, encoder.type);
+        }
+        dispatch("finish");
       }
-      dispatch("finish");
     }
   }
 
@@ -86,12 +94,35 @@
   });
 
   async function start(id) {
+    const data = await fetchData(id);
+
+    const autoWidth = !width;
+    const autoHeight = !height;
+    if (autoWidth || autoHeight) {
+      let aspect = 1;
+      const defaultSize = 1024;
+      if (data && data.project && data.project.scriptJSON) {
+        if (typeof data.project.scriptJSON.aspectRatio === 'number') {
+          aspect = data.project.scriptJSON.aspectRatio;
+        }
+      }
+      if (autoWidth && autoHeight) { // use default size
+        height = defaultSize;
+        width = Math.round(height * aspect);
+      } else if (autoWidth) { // decide width based on aspect
+        width = Math.round(height * aspect);
+      } else { // decide height based on aspect
+        height = Math.round(width / aspect);
+      }
+    }
+
     let opts = { width, height, fps, totalFrames, dithering };
     if (format === "mp4") encoder = await createMP4Encoder(opts);
     else if (format === "png") encoder = await createPNGEncoder(opts);
     else if (format === "frames")
       encoder = await createFrameSequenceEncoder(opts);
-    else encoder = await createGIFEncoder(opts);
+    else if (format === 'gif') encoder = await createGIFEncoder(opts);
+    else encoder = createInlineEncoder(opts);
 
     // aborted
     if (!encoder) {
@@ -99,13 +130,26 @@
       return null;
     }
 
-    const data = await fetchData(id);
     return renderHTML(data, {
+      inline: format === 'inline',
       fps,
       width,
       height,
       totalFrames,
     });
+  }
+
+  function createInlineEncoder (opts) {
+    return {
+      type: "image/png",
+      extension: ".png",
+      async encode(bitmap) {
+        // blob = getBitmapBlob(bitmap, width, height, "image/png");
+      },
+      async finish() {
+        return null;
+      },
+    };
   }
 
   async function fetchData(id) {
@@ -135,13 +179,16 @@
     <div class="loading">loading...</div>
   {:then html}
     {#if html}
-      <canvas bind:this={visualizer} style="display:none" />
+      {#if format !== 'inline'}
+        <canvas bind:this={visualizer} style="display:none" />
+      {/if}
       <iframe
         width="{width}px"
         height="{height}px"
         scrolling="no"
         title=""
         srcdoc={html}
+        class:visible={format === 'inline'}
       />
     {/if}
   {/await}
@@ -159,6 +206,10 @@
     pointer-events: none;
     border: none;
     visibility: hidden;
+  }
+  .visible {
+    visibility: visible;
+    pointer-events: initial;
   }
   .hidden {
     visibility: hidden;

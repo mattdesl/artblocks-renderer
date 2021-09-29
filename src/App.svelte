@@ -3,7 +3,7 @@
   import Progress from "./Progress.svelte";
   import { isFrameSequenceSupported } from "./recording";
 
-  let id = "9000139";
+  let id = "53000080";
   let fps = 30;
   let fpsPresets = [24, 25, 30, 50, 60];
   let duration = 4;
@@ -47,7 +47,7 @@
   {#if rendering}
     <div class="row">
       <button on:click={stopRender} class="button">Cancel</button>
-      {#if format !== "png"}<Progress {progress} />
+      {#if format !== "png" && format !== 'inline'}<Progress {progress} />
       {:else}
         <div class="rendering">Rendering...</div>
       {/if}
@@ -76,6 +76,7 @@
         <select bind:value={format}>
           <option value="gif">gif</option>
           <option value="png">png still</option>
+          <option value="inline">inline</option>
           {#if isFrameSequenceSupported()}
             <option value="frames">png sequence</option>
           {/if}
@@ -95,7 +96,7 @@
           >
         </div>
       {/if}
-      <div class="field fps-container" class:hidden={format === "png"}>
+      <div class="field fps-container" class:hidden={format === 'inline' || format === "png"}>
         <caption>Framerate</caption>
         <input
           class="fps"
@@ -113,7 +114,7 @@
           >
         {/each}
       </div>
-      <div class="field duration-container" class:hidden={format === "png"}>
+      <div class="field duration-container" class:hidden={format === 'inline' || format === "png"}>
         <caption>Duration</caption>
         <input
           class="duration"
@@ -143,7 +144,8 @@
           type="number"
           bind:value={height}
         />
-        <span class="unit">px</span>
+        <span class="unit">px <em>(use 0 for 'auto')</em></span>
+        
       </div>
 
       {#await canUseMP4() then canUse}
