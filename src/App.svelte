@@ -3,7 +3,7 @@
   import Progress from "./Progress.svelte";
   import { isFrameSequenceSupported } from "./recording";
 
-  let id = "53000080";
+  let id = "9000139";
   let fps = 30;
   let fpsPresets = [24, 25, 30, 50, 60];
   let duration = 4;
@@ -76,7 +76,7 @@
         <select bind:value={format}>
           <option value="gif">gif</option>
           <option value="png">png still</option>
-          <option value="inline">inline</option>
+          <!-- <option value="inline">inline</option> -->
           {#if isFrameSequenceSupported()}
             <option value="frames">png sequence</option>
           {/if}

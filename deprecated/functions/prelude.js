@@ -37,7 +37,16 @@ function downloadBlob(buf, filename, type) {
 async function createMP4Encoder(opts = {}) {
   const { width, height, mp4, fps = 30 } = opts;
   const MP4 = await mp4.loadMP4Module();
-  const encoder = MP4.createWebCodecsEncoder({ width, height, fps });
+  const encoder = MP4.createWebCodecsEncoder({
+    width,
+    height,
+    fps,
+
+    // groupOfPictures: fps,
+    // sequential: true,
+    format: "avc",
+    codec: "avc1.420034",
+  });
   return {
     type: "video/mp4",
     extension: ".mp4",

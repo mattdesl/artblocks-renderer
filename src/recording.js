@@ -38,7 +38,21 @@ export async function createMP4Encoder(opts = {}) {
   const { width, height, mp4, fps = 30 } = opts;
   const { loadMP4Module } = await window.MP4Encoder;
   const MP4 = await loadMP4Module();
-  const encoder = MP4.createWebCodecsEncoder({ width, height, fps });
+  const encoder = MP4.createWebCodecsEncoder({
+    width,
+    height,
+    fps,
+    codec: "avc1.420034",
+    encoderOptions: {
+      // bitrate: 180_000_000,
+      // bitrateMode: "constant",
+      // framerate: fps,
+      // displayWidth: width,
+      // displayHeight: height,
+      // hardwareAcceleration: "prefer-software",
+      // framerate: fps,
+    },
+  });
   return {
     type: "video/mp4",
     extension: ".mp4",
