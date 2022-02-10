@@ -130,12 +130,20 @@
       return null;
     }
 
+    // Should find a better way to handle different projects
+    // This is a shim for Squiggle to auto-trigger animation on start
+    let clickOnStart = false;
+    if (data && data.project && String(data.project.projectId) === '0' && format !== 'png') {
+      clickOnStart = true;
+    }
+
     return renderHTML(data, {
       inline: format === 'inline',
       fps,
       width,
       height,
       totalFrames,
+      clickOnStart
     });
   }
 

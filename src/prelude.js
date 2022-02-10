@@ -5,6 +5,7 @@ export default function getPrelude(opts = {}) {
     height = 512,
     fps = 30,
     totalFrames = 30,
+    clickOnStart = false,
   } = opts;
   const config = {
     width,
@@ -12,13 +13,14 @@ export default function getPrelude(opts = {}) {
     fps,
     totalFrames,
     inline,
+    clickOnStart,
   };
   return /*js*/ `
     <script>
     ;(function () {
       const inline = ${JSON.stringify(inline)};
       const settings = ${JSON.stringify(config)};
-      const { fps, width, height, totalFrames } = settings;
+      const { fps, width, height, totalFrames, clickOnStart } = settings;
 
       // Patch pixel ratio
       window.devicePixelRatio = 1;
@@ -108,6 +110,8 @@ export default function getPrelude(opts = {}) {
       
         const canvas = findCanvas();
         if (!canvas) return console.warn("no canvas");
+
+        if (clickOnStart) canvas.click();
 
         // const tmpCanvas = document.createElement('canvas');
         // const tmpContext = tmpCanvas.getContext('2d');
