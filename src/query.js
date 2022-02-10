@@ -1,13 +1,15 @@
 // Thanks to @r4v3n and artblocks-gallery
 // https://github.com/r4v3n-art/art-blocks-gallery
 
-// This subgraph seems to work best for owner-to-tokens query
-const TOKEN_EXPLORER =
-  "https://api.thegraph.com/subgraphs/name/xenoliss/art-blocks-explorer";
-
-// This subgraph seems to have better support for projects & AB contracts
 const PROJECT_EXPLORER =
   "https://api.thegraph.com/subgraphs/name/artblocks/art-blocks";
+
+const contracts = [
+  "0x059edd72cd353df5106d2b9cc5ab83a52287ac3a",
+  "0xa7d8d9ef8d8ce8992df33d8b8cf4aebabd5bd270",
+];
+
+const contract_in = JSON.stringify(contracts);
 
 // Utility to query from subgraph
 async function query(url, query) {
@@ -34,7 +36,7 @@ async function fetchTokensByOwner(ownerAddress, opt = {}) {
   const { tokens } = await query(
     PROJECT_EXPLORER,
     `{
-  tokens(first: ${limit}, orderBy: tokenId, orderDirection: asc, where: {id_gt: "${lastId}", owner: "${ownerAddress}"}) {
+  tokens(first: ${limit}, orderBy: tokenId, orderDirection: asc, where: {id_gt: "${lastId}", owner: "${ownerAddress}", contract_in: ${contract_in} }) {
     tokenId
     project {
       tokenId
@@ -51,7 +53,7 @@ async function fetchTokensByProject(projectId, opt = {}) {
   const { tokens } = await query(
     PROJECT_EXPLORER,
     `{
-  tokens(first: ${limit}, orderBy: tokenId, orderDirection: asc, where: {id_gt: "${lastId}", project: "${projectId}"}) {
+  tokens(first: ${limit}, orderBy: tokenId, orderDirection: asc, where: {id_gt: "${lastId}", project: "${projectId}", contract_in: ${contract_in} }) {
     tokenId
     project {
       tokenId
@@ -126,7 +128,7 @@ async function fetchToken(id) {
   const { tokens } = await query(
     PROJECT_EXPLORER,
     `{
-  tokens(where: { tokenId: "${id}" }) {
+  tokens(where: { tokenId: "${id}", contract_in: ${contract_in} }) {
     tokenId
     hash
   }
