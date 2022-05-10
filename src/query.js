@@ -91,7 +91,7 @@ async function fetchProject(id) {
   const { projects } = await query(
     PROJECT_EXPLORER,
     `{
-  projects(where: { projectId: "${id}" }) {
+  projects(where: { projectId: "${id}", contract_in: ${contract_in} }) {
     projectId
     name
     scriptJSON
