@@ -35,6 +35,9 @@
 
   let encoder;
   let promise, visualizer;
+  let actualTokenId;
+
+  const URL_PART = 'collections/curated/projects/';
   $: promise = start(id);
 
   async function receive(evt) {
@@ -79,7 +82,7 @@
       if (hasProgress) {
         dispatch("progress", 1);
         if (buf) {
-          downloadBlob(buf, `${id}${encoder.extension}`, encoder.type);
+          downloadBlob(buf, `${actualTokenId}${encoder.extension}`, encoder.type);
         }
         dispatch("finish");
       }
@@ -160,8 +163,40 @@
     };
   }
 
+  function resolveArtblocksUrl (url) {
+    // https://www.artblocks.io/collections/curated/projects/0x99a9b7c1116f9ceeb1652de04d5969cce509b069/385
+    // https://www.artblocks.io/collections/curated/projects/0x99a9b7c1116f9ceeb1652de04d5969cce509b069/385/tokens/385000000
+    url = url.toLowerCase();
+    const parts = url.split(URL_PART)
+    let tokenId, contract;
+    if (parts.length == 2) {
+      const path = parts[1];
+      const data = path.split('/');
+      contract = data[0];
+      if (data.includes('tokens')) {
+        tokenId = data[data.length - 1];
+      } else {
+        tokenId = String(parseInt(data[1], 10) * 1000000);
+      }
+    } 
+    
+    if (!tokenId) {
+      alert(`URL is incorrect; has to be in the form artblocks.io/collections/curated/....`);
+    }
+
+    console.log('Got Contract:', contract)
+    console.log('Got TokenID:', tokenId)
+    return tokenId;
+  }
+
   async function fetchData(id) {
     id = String(id);
+    if (id.toLowerCase().includes(URL_PART)) {
+      id = resolveArtblocksUrl(id);
+    }
+
+    actualTokenId = id;
+
     const idNum = parseInt(id, 10);
     if (isNaN(idNum)) {
       throw new Error("id query parameter is not a number");

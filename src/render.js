@@ -1,7 +1,7 @@
 import templates from "./templates";
 import getPrelude from "./prelude";
 
-const acceptedTemplates = ["p5js", "js", "threejs", "regl"];
+const acceptedTemplates = ["p5js", "js", "threejs", "regl", "paper"];
 
 export default (data, opts = {}) => {
   let type = "js";
@@ -38,7 +38,7 @@ export default (data, opts = {}) => {
           tokenId,
         };
 
-  const base = templates[type];
+  const base = templates[type] || templates.js;
   version = resolveVersion(type, version);
 
   let vendorUrl;
@@ -46,6 +46,8 @@ export default (data, opts = {}) => {
     vendorUrl = "https://cdnjs.cloudflare.com/ajax/libs/regl/2.1.0/regl.min.js";
   } else if (type === "p5js") {
     vendorUrl = `https://cdnjs.cloudflare.com/ajax/libs/p5.js/${version}/p5.min.js`;
+  } else if (type === "paper") {
+    vendorUrl = `https://cdnjs.cloudflare.com/ajax/libs/paper.js/${type}/paper-full.min.js`;
   }
   let vendor;
   if (vendorUrl) vendor = `<script src="${vendorUrl}"></script>`;

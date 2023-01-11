@@ -68,7 +68,7 @@
   {:else}
     <div class="settings">
       <div class="field token-id-container">
-        <caption class="tab">Token ID</caption>
+        <caption class="tab">TokenID / ArtBlocks URL</caption>
         <input class="token-id" type="text" bind:value={id} />
       </div>
       <div class="field dimensions-container">
@@ -270,7 +270,7 @@
   }
 
   .token-id {
-    width: 100px;
+    width: 360px;
   }
   .fps,
   .duration,
@@ -292,7 +292,7 @@
     margin: 0;
     /* margin-right: 20px; */
     padding: 0;
-    width: 90px;
+    width: 120px;
   }
 
   .field:first-child {
