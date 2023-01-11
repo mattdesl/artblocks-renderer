@@ -6,8 +6,8 @@ const acceptedTemplates = ["p5js", "js", "threejs", "regl"];
 export default (data, opts = {}) => {
   let type = "js";
   let version;
-  if (data.project.scriptJSON && data.project.scriptJSON.type) {
-    type = data.project.scriptJSON.type;
+  if (data.project.scriptType) {
+    type = data.project.scriptType;
   }
 
   type = (type || "").toLowerCase();
@@ -19,9 +19,9 @@ export default (data, opts = {}) => {
     return alert(`Error: Project type "${type}" not yet supported.`);
   }
 
-  if (data.project.scriptJSON && data.project.scriptJSON.version) {
-    if (!/n[\\/]?a/i.test(data.project.scriptJSON.version)) {
-      version = data.project.scriptJSON.version;
+  if (data.project.scriptVersion) {
+    if (!/n[\\/]?a/i.test(data.project.scriptVersion)) {
+      version = data.project.scriptVersion;
     }
   }
 
@@ -44,6 +44,8 @@ export default (data, opts = {}) => {
   let vendorUrl;
   if (type === "regl") {
     vendorUrl = "https://cdnjs.cloudflare.com/ajax/libs/regl/2.1.0/regl.min.js";
+  } else if (type === "p5js") {
+    vendorUrl = `https://cdnjs.cloudflare.com/ajax/libs/p5.js/${version}/p5.min.js`;
   }
   let vendor;
   if (vendorUrl) vendor = `<script src="${vendorUrl}"></script>`;

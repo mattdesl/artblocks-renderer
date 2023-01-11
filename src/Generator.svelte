@@ -170,6 +170,10 @@
     const projNumber = Math.floor(idNum / C);
     const project = await fetchProject(projNumber);
     const token = await fetchToken(id);
+    console.log(`Token ID: ${id}`)
+    console.log(`Project ID: ${projNumber}`)
+    console.log(`Project:`, project)
+    console.log(`Token:`, token)
     return {
       id,
       project,

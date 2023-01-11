@@ -3,7 +3,7 @@
   import Progress from "./Progress.svelte";
   import { isFrameSequenceSupported } from "./recording";
 
-  let id = "9000139";
+  let id = "399000000";
   let fps = 30;
   let fpsPresets = [24, 25, 30, 50, 60];
   let duration = 4;

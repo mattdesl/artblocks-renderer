@@ -5,6 +5,7 @@ const PROJECT_EXPLORER =
   "https://api.thegraph.com/subgraphs/name/artblocks/art-blocks";
 
 const contracts = [
+  "0x99a9b7c1116f9ceeb1652de04d5969cce509b069",
   "0x059edd72cd353df5106d2b9cc5ab83a52287ac3a",
   "0xa7d8d9ef8d8ce8992df33d8b8cf4aebabd5bd270",
 ];
@@ -94,6 +95,9 @@ async function fetchProject(id) {
   projects(where: { projectId: "${id}", contract_in: ${contract_in} }) {
     projectId
     name
+    aspectRatio
+    script
+    scriptTypeAndVersion
     scriptJSON
     website
     artistName
@@ -111,12 +115,34 @@ async function fetchProject(id) {
   );
   if (!projects || projects.length === 0) return null;
   const result = projects[0];
-  result.id = result.projectId;
   if (result) {
-    result.scriptJSON = JSON.parse(result.scriptJSON);
-    if ("aspectRatio" in result.scriptJSON) {
-      result.scriptJSON.aspectRatio = parseFloat(result.scriptJSON.aspectRatio);
+    result.id = result.projectId;
+    if (result.scriptJSON != null) {
+      if (typeof result.scriptJSON === "string") {
+        result.scriptJSON = JSON.parse(result.scriptJSON);
+      }
+      if ("aspectRatio" in result.scriptJSON) {
+        result.aspectRatio = parseFloat(result.scriptJSON.aspectRatio);
+      }
+      result.scriptType = result.scriptJSON.type;
+      result.scriptVersion = result.scriptJSON.version;
     }
+
+    result.aspectRatio = parseFloat(result.aspectRatio) || 0;
+    if (result.scriptTypeAndVersion) {
+      const parts = result.scriptTypeAndVersion.split("@");
+      const type = parts[0];
+      let version = "n/a";
+      if (parts.length > 1) version = parts[1];
+      result.scriptType = type;
+      result.scriptVersion = version;
+    }
+
+    if (!result.scriptJSON) result.scriptJSON = {};
+    if (!result.scriptJSON.type) result.scriptJSON.type = result.type;
+    if (!result.scriptJSON.aspectRatio)
+      result.scriptJSON.aspectRatio = result.aspectRatio;
+
     result.maxInvocations = parseInt(result.maxInvocations, 10);
     result.pricePerTokenInWei = parseInt(result.pricePerTokenInWei, 10);
     result.invocations = parseInt(result.invocations, 10);
